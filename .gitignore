@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 /.idea/
+signing-key.jks
+app/release/
+app/debug/
