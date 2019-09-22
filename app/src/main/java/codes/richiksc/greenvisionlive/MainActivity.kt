@@ -107,26 +107,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun togglePlayback(view: View) {
-        if (camera_view.isStreaming) {
-            camera_view.stopPlayback()
-            if (view is FloatingActionButton) {
-                view.setImageResource(R.drawable.ic_pause_play)
-                val drawable = view.drawable;
-                if (drawable is Animatable) {
-                    drawable.start()
-                }
+        val imageResource =
+            if (camera_view.isStreaming) {
+                camera_view.stopPlayback()
+                R.drawable.ic_pause_play
+            } else {
+                initLiveView()
+                R.drawable.ic_play_pause
             }
-        } else {
-            initLiveView()
-            if (view is FloatingActionButton) {
-                view.setImageResource(R.drawable.ic_play_pause)
-                val drawable = view.drawable;
-                if (drawable is Animatable) {
-                    drawable.start()
-                }
+        if (view is FloatingActionButton) {
+            view.setImageResource(imageResource)
+            val drawable = view.drawable;
+            if (drawable is Animatable) {
+                drawable.start()
             }
         }
-
     }
 
     override fun onResume() {
