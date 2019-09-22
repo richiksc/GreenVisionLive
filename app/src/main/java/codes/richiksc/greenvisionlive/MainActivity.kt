@@ -2,15 +2,16 @@ package codes.richiksc.greenvisionlive
 
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.webkit.URLUtil
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.drawToBitmap
 import com.github.niqdev.mjpeg.DisplayMode
 import com.github.niqdev.mjpeg.Mjpeg
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -73,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                     camera_view.setSource(inputStream)
                     camera_view.setDisplayMode(calculateDisplayMode())
                     camera_view.showFps(true)
+                    play_pause_button.show()
                 },
                 { throwable ->
                     Log.e(javaClass.name, "mjpeg error", throwable)
@@ -102,6 +104,29 @@ class MainActivity : AppCompatActivity() {
             Log.e(javaClass.name, "mjpeg error - invalid url")
             mjpg_url_input_layout.error = getString(R.string.mjpg_url_input_error)
         }
+    }
+
+    fun togglePlayback(view: View) {
+        if (camera_view.isStreaming) {
+            camera_view.stopPlayback()
+            if (view is FloatingActionButton) {
+                view.setImageResource(R.drawable.ic_pause_play)
+                val drawable = view.drawable;
+                if (drawable is Animatable) {
+                    drawable.start()
+                }
+            }
+        } else {
+            initLiveView()
+            if (view is FloatingActionButton) {
+                view.setImageResource(R.drawable.ic_play_pause)
+                val drawable = view.drawable;
+                if (drawable is Animatable) {
+                    drawable.start()
+                }
+            }
+        }
+
     }
 
     override fun onResume() {

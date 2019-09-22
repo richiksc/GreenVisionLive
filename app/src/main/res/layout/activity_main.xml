@@ -22,6 +22,19 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/play_pause_button"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            app:backgroundTint="@color/colorAccent"
+            app:tint="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/ic_pause_play"
+            android:onClick="togglePlayback"
+            android:visibility="invisible"/>
+
     <include layout="@layout/content_main"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
