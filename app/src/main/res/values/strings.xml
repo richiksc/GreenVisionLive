@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GreenVision Live</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="stream_ip_address">Stream IP address</string>
+    <string name="set_ip_address">Set</string>
+    <string name="mjpg_url_key">MJPG_URL</string>
+    <string name="mjpg_url_input_error">Must be a valid URL</string>
+</resources>
