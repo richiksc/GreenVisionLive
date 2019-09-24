@@ -1,16 +1,21 @@
 package codes.richiksc.greenvisionlive
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.webkit.URLUtil
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.github.niqdev.mjpeg.DisplayMode
 import com.github.niqdev.mjpeg.Mjpeg
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,17 +24,22 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val IPCAM_URL = "http://10.18.16.16:3030/video_feed"
-    private val TIMEOUT = 5
+    companion object {
+        const val DEFAULT_URL = "http://10.18.16.16:1185"
+        const val TIMEOUT = 5
+    }
 
-    private var mjpgUrl: String = IPCAM_URL
+    private var mjpgUrl: String = DEFAULT_URL
+    private lateinit var recentUrls: MutableSet<String>
+    private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var prefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        val prefs = getPreferences(Context.MODE_PRIVATE) ?: return
-        mjpgUrl = prefs.getString(getString(R.string.mjpg_url_key), IPCAM_URL).toString()
+        prefs = getPreferences(Context.MODE_PRIVATE)
+        mjpgUrl = prefs.getString(getString(R.string.mjpg_url_key), DEFAULT_URL).toString()
         mjpg_url_input.setText(mjpgUrl)
         mjpg_url_input.setOnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE) {
@@ -37,6 +47,45 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
+
+        recentUrls = HashSet(prefs.getStringSet(getString(R.string.recent_urls_key), HashSet<String>())!!)
+        Log.d(javaClass.name, "onCreate recentUrls: $recentUrls")
+        adapter = ArrayAdapter(
+            this,
+            R.layout.dropdown_menu_item,
+            recentUrls.toMutableList()
+        )
+        mjpg_url_input.setAdapter(adapter)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.overflow_menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.clear_recent_urls -> {
+                clearRecentUrls()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun clearRecentUrls() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.confirm_clear_urls_title)
+            .setMessage(R.string.confirm_clear_urls_body)
+            .setPositiveButton(R.string.confirm_action_clear) { _, _ ->
+                recentUrls.clear()
+                adapter.clear()
+                with(prefs.edit()) {
+                    putStringSet(getString(R.string.recent_urls_key), recentUrls)
+                    commit()
+                }
+            }
+            .show()
     }
 
     override fun onConfigurationChanged(config: Configuration) {
@@ -95,9 +144,11 @@ class MainActivity : AppCompatActivity() {
             mjpg_url_input_layout.error = null
             mjpgUrl = textContent
             initLiveView()
-            val prefs = getPreferences(Context.MODE_PRIVATE)
+            recentUrls.add(mjpgUrl)
+            adapter.add(mjpgUrl)
             with (prefs.edit()) {
                 putString(getString(R.string.mjpg_url_key), mjpgUrl)
+                putStringSet(getString(R.string.recent_urls_key), recentUrls)
                 commit()
             }
         } else {
@@ -117,7 +168,7 @@ class MainActivity : AppCompatActivity() {
             }
         if (view is FloatingActionButton) {
             view.setImageResource(imageResource)
-            val drawable = view.drawable;
+            val drawable = view.drawable
             if (drawable is Animatable) {
                 drawable.start()
             }

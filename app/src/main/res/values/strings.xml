@@ -5,4 +5,15 @@
     <string name="set_ip_address">Set</string>
     <string name="mjpg_url_key">MJPG_URL</string>
     <string name="mjpg_url_input_error">Must be a valid URL</string>
+    <string name="recent_urls_key">RECENT_URLS</string>
+    <string name="confirm_url_deletion_title">Confirm URL deletion</string>
+    <string name="confirm_url_deletion_body">Are you sure you want to remove this URL from your recent URLs list?
+    </string>
+    <string name="menu_item_clear_recent_urls">Clear recent URLs</string>
+    <string name="confirm_clear_urls_title">Clear all recent URLs?</string>
+    <string name="confirm_clear_urls_body">Are you sure you want to delete all URLs from the recents list? This action
+        cannot be undone.
+    </string>
+    <string name="confirm_action_clear">Clear</string>
+    <string name="confirm_action_remove">Remove</string>
 </resources>
