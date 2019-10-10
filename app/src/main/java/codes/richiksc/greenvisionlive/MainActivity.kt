@@ -48,8 +48,6 @@ class MainActivity : AppCompatActivity() {
             false
         }
 
-        // TODO: test todo-bot
-
         recentUrls = HashSet(prefs.getStringSet(getString(R.string.recent_urls_key), HashSet<String>())!!)
         Log.d(javaClass.name, "onCreate recentUrls: $recentUrls")
         adapter = ArrayAdapter(
